@@ -16,7 +16,8 @@ public:
         name = newName;
     }
 
-    Student(string newName, string newSurname, int newAlbumNumber) {
+    Student(string newName, string newSurname, int newAlbumNumber)
+    {
         name = newName;
         surname = newSurname;
         albumNumber = newAlbumNumber;
@@ -30,9 +31,8 @@ public:
         surname = newsurname;
 
     }
-    void set_albumNumber(int new_albumNumber) { // setter
+    void set_albumNumber(int new_albumNumber) {// setter
         albumNumber = new_albumNumber;
-
     }
      void set_grades(vector<float> new_grades) { // setter
             grades = new_grades;
@@ -86,13 +86,16 @@ int main()
     cin>>surname;
     cout<<"Enter Album number:" << endl;
     cin>>albumNumber;
-    cout<<"Enter 5 grades:" << endl;
+    if(albumNumber<10000 || albumNumber>999999){
+        cout<<"Invlid Album number" << endl;
+    }
+    cout<<"Enter 3 grades:" << endl;
 
     for(int i=0; i<3; i++)
     {
-    cout<< i << " grade:" << endl;
-    cin>>grade;
-    grades.push_back(grade);
+        cout<< i << " grade:" << endl;
+        cin>>grade;
+        grades.push_back(grade);
     }
     Student student1(name, surname, albumNumber);
     student1.set_grades(grades);
