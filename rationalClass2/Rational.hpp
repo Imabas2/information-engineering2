@@ -13,7 +13,9 @@ public:
     Rational add(const Rational &other) const; // adds second rational number, returns result
     Rational subtract(const Rational &other) const; // subtracts second rational number, returns result
     void print() const; // prints number to console
-
+    Rational operator+(const Rational&rhs)const;//rhs righthand side
+    Rational operator-(const Rational&rhs)const;
+    Rational operator*(const Rational&rhs)const;
 private:
     int num_, den_;
 };

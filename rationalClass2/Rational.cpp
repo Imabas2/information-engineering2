@@ -46,6 +46,7 @@ Rational Rational::subtract(const Rational &other) const {
                     den_ * other.den_);
 }
 
+
 void Rational::print() const {
     if (den_ == 1) {
         std::cout << num_;
@@ -53,3 +54,4 @@ void Rational::print() const {
         std::cout << num_ << "/" << den_;
     }
 }
+
