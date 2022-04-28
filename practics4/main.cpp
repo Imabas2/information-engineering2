@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -17,7 +18,7 @@ public:
         ro_speed_ = ro_speed;
     }
 
-    void setBounds(const double& l_bound, const double& r_bound,const double& u_bound,const double& d_bound){
+    void setBounds(const float& l_bound, const float& r_bound,const float& u_bound,const float& d_bound){
         l_bound_  = l_bound  ;
         r_bound_  = r_bound  ;
         u_bound_  = u_bound  ;
@@ -65,6 +66,16 @@ public:
         return false;
     }
 
+    bool isActive(){return active_;}
+    void makeActive(){
+        setFillColor(sf::Color(255,0,0));
+        active_ = true;
+    }
+    void disactivate(){
+        setFillColor(sf::Color(0,255,0));
+        active_ = false;
+    }
+
 private:
     int x_speed_ = 0 ;
     int y_speed_ = 0 ;
@@ -73,6 +84,7 @@ private:
     float r_bound_ = 0;
     float u_bound_ = 0;
     float d_bound_ = 0;
+    bool active_ = 0;
 
     void bouncce(){
         sf::FloatRect rectangle_bounds = getGlobalBounds();
@@ -99,19 +111,28 @@ private:
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+    std::srand(std::time(nullptr));
 
-    sf::Vector2f size(120.0, 60.0);
-    sf::Vector2f position(120.0, 60.0);
-    CustomRectangleShape rectangle_inh(size, position);
-    rectangle_inh.setFillColor(sf::Color(150, 100, 50));
-    rectangle_inh.setSpeed(100, 150, 10);
+    std::vector<CustomRectangleShape> rectangles;
+
+    for(int i=0; i<10; i++)
+    {
+        sf::Vector2f size(120.0, 60.0);
+        sf::Vector2f position(std::rand() % (window.getSize().x - 120), std::rand() % (window.getSize().y - 60));
+        rectangles.emplace_back(CustomRectangleShape(size, position));
+    }
+
+    for(auto &rec : rectangles)
+    {
+        rec.setFillColor(sf::Color(0, 255, 0));
+        rec.setBounds(0, window.getSize().x, 0, window.getSize().y);
+        rec.setSpeed(100, 200, 10);
+    }
 
     sf::Clock clock;
 
     while (window.isOpen()) {
         sf::Time elapsed = clock.restart();
-
-        rectangle_inh.setBounds(0, window.getSize().x, 0, window.getSize().y);
 
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -119,27 +140,39 @@ int main() {
                 window.close();
         }
 
-
-        sf::Keyboard::Key pressed;
         sf::Vector2i mouse_pos;
-
-        if(event.type == sf::Event::KeyPressed)
-        {
-            pressed = event.key.code;
-            rectangle_inh.moveInDirection(elapsed,pressed);
-        }
-
         if(event.type == sf::Event::MouseButtonPressed)
+        {
             if(event.mouseButton.button == sf::Mouse::Left)
                  mouse_pos = sf::Mouse::getPosition(window);
 
-        if(rectangle_inh.isClicked(mouse_pos))
-            rectangle_inh.setFillColor(sf::Color(rand() % 256,rand() % 256,rand() % 256));
+            for(auto &rec : rectangles)
+            {
+                rec.disactivate();
+                if(rec.isClicked(mouse_pos))
+                    rec.makeActive();
+            }
+        }
 
+
+        sf::Keyboard::Key pressed;
+        if(event.type == sf::Event::KeyPressed)
+        {
+            pressed = event.key.code;
+            for(auto &rec : rectangles)
+            {
+                if(rec.isActive())
+                    rec.moveInDirection(elapsed,pressed);
+            }
+
+        }
 
 
         window.clear(sf::Color::Black);
-        window.draw(rectangle_inh);
+        for(auto &rec : rectangles)
+        {
+            window.draw(rec);
+        }
         window.display();
     }
 
